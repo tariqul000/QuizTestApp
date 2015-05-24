@@ -18,16 +18,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tariqul.quiztest.DBHandler.DBHandler;
+import com.example.tariqul.quiztest.GamePlay.FunctionGamePlay;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 public class MainActivity extends ActionBarActivity {
 
     TextView tvQuestion, tvCorrectAnswer;
-
-
     RadioButton r1, r2, r3, r4;
 
     RadioGroup radioGroup;
@@ -36,6 +36,9 @@ public class MainActivity extends ActionBarActivity {
     DBHandler db;
     List<Question> values;
     String correctAnswer;
+    private Question currentQ;
+    private FunctionGamePlay currentGame;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +78,7 @@ public class MainActivity extends ActionBarActivity {
         tvCorrectAnswer=(TextView)findViewById(R.id.tvCorrectAnswer);
 
 
+        currentGame=new FunctionGamePlay();
 
     }
 
@@ -82,6 +86,8 @@ public class MainActivity extends ActionBarActivity {
     public void questionResize(){
 
         values=db.getAllQuestion();
+        currentGame.setQuestions(values);
+
 
         for (int i = 0; i < values.size(); i++) {
 
@@ -158,34 +164,44 @@ public class MainActivity extends ActionBarActivity {
           switch (view.getId()) {
               case R.id.next:
 
+                  int round=0;
+                  values= db.getAllQuestion();
+                  Question question= values.get(round);
+                  round++;
+                  tvQuestion.setText(question.getQuestion());
+               /*values=db.getAllQuestion();
+                  //for (int i = 0; i < values.size(); i++) {*//*
+               *//*       Random random = new Random();
+                   String[] question= values.get(i).getQuestion().length();
+                     int questi=random.nextInt(question);*//*
 
-                  List<Question> questions = new ArrayList<>();
+                      currentGame=new FunctionGamePlay();
 
-                  String selectQuery = "SELECT * FROM " + db.TABLE_MATH;
-                  SQLiteDatabase sqLiteDatabase = this.db.getWritableDatabase();
+                  for (int i = 0; i < values.size(); i++) {
+                      int j=i-1;
 
-                  Cursor cursor = sqLiteDatabase.rawQuery(selectQuery, null);
-
-                  if (cursor.moveToFirst()) {
-                      do {
-                          Question question = new Question();
-                          question.setKey(Integer.parseInt(cursor.getString(0)));
-                          question.setQuestionId(cursor.getString(1));
-                          question.setQuestion(cursor.getString(2));
-                          question.setOption1(cursor.getString(3));
-                          question.setOption2(cursor.getString(4));
-                          question.setOption3(cursor.getString(5));
-                          question.setOption4(cursor.getString(6));
-                          question.setAnswer(cursor.getString(7));
-
-                          questions.add(question);
-
-                         // DisplayContact(cursor);
-
-                      } while (cursor.moveToNext());
+                      currentQ = currentGame.getNextQuestion(values);
 
 
-              }
+                      tvQuestion.setText(currentQ.getQuestion());
+
+                      r1.setText(currentQ.getOption1().trim());
+                      r2.setText(currentQ.getOption2().trim());
+                      r3.setText(currentQ.getOption3().trim());
+                      r4.setText(values.get(j).getOption4());
+
+                      correctAnswer = currentQ.getAnswer().trim();
+                  }
+               *//*   List<Question> questions = new ArrayList<>();*/
+
+                  Random random1 = new Random();
+                  String[] mTestArray  =   getResources().getStringArray(R.array.planets_array);
+                  TextView textView = (TextView)findViewById(R.id.tvCorrectAnswer);
+                  int maxIndex = mTestArray.length;
+                  int generatedIndex = random1.nextInt(maxIndex);
+
+                  textView.setText(mTestArray[generatedIndex]);
+
           }
       }
     private void DisplayContact(Cursor c) {
